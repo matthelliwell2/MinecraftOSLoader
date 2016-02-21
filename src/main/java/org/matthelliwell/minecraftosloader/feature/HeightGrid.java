@@ -9,21 +9,17 @@ import org.matthelliwell.minecraftosloader.TriConsumer;
  * in the shape files.
  */
 public class HeightGrid {
-    private float[][] heights;
+    private final float[][] heights;
     private float minHeight = Integer.MAX_VALUE;
     private float maxHeight = Integer.MIN_VALUE;
     final private ReferencedEnvelope bounds;
-    final int minX;
-    final int maxX;
-    final int minY;
-    final int maxY;
+    private final int minX;
+    private final int minY;
 
     public HeightGrid(final ReferencedEnvelope bounds) {
         this.bounds = bounds;
         minX = (int)bounds.getMinX();
-        maxX = (int)bounds.getMaxX();
         minY = (int)bounds.getMinY();
-        maxY = (int)bounds.getMaxY();
         heights = new float[(int)(bounds.getWidth()) + 1][(int)(bounds.getHeight()) + 1];
 
         // Sset the heights to some default value so we can tell if they've been set or not. Don't use zero
@@ -80,38 +76,33 @@ public class HeightGrid {
     }
 
     public int getMinX() {
-        // TODO
-        return 333616;
-//        return (int)bounds.getMinX();
+//        return 333616;
+        return (int)bounds.getMinX();
     }
 
     public int getMaxX() {
-        // TODO
-        return 334450;
-//        return (int)bounds.getMaxX();
+//        return 334450;
+        return (int)bounds.getMaxX();
     }
 
     public int getMinY() {
-        // TODO
-        return 390000;
-//        return (int)bounds.getMinY();
+//        return 390000;
+        return (int)bounds.getMinY();
     }
 
     public int getMaxY() {
-        // TODO
-        return 390683;
-//        return (int)bounds.getMaxY();
+//        return 390683;
+        return (int)bounds.getMaxY();
     }
 
     public ReferencedEnvelope getBounds() {
-        // TODO
+        // We create a new bounds here so we can manually set the min/max x and y if we want to test with a smaller area
         return new ReferencedEnvelope(getMinX(), getMaxX(), getMinY(), getMaxY(), bounds.getCoordinateReferenceSystem());
 //        return bounds;
     }
 
 
     public ReferencedEnvelope getRealBounds() {
-        // TODO
         return new ReferencedEnvelope(getMinX(), getMaxX(), getMinY(), getMaxY(), bounds.getCoordinateReferenceSystem());
     }
 

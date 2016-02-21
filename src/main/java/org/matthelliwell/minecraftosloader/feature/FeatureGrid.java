@@ -26,11 +26,11 @@ public class FeatureGrid {
 
     final private ReferencedEnvelope bounds;
 
-    private byte[][] features;
-    final int minX;
-    final int maxX;
-    final int minY;
-    final int maxY;
+    private final byte[][] features;
+    private final int minX;
+    private final int maxX;
+    private final int minY;
+    private final int maxY;
 
     public FeatureGrid(final ReferencedEnvelope bounds) {
         this.bounds = bounds;

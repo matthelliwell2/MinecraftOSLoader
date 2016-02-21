@@ -6,7 +6,6 @@ import java.nio.file.Path;
 
 import com.vividsolutions.jts.geom.Point;
 import org.matthelliwell.minecraftosloader.file.MultiploygonFileLoader;
-import org.opengis.referencing.FactoryException;
 
 /**
  * Loads the woodlands into the feature grid
@@ -28,7 +27,7 @@ public class WoodlandGenerator {
 
     }
 
-    public void generate(final Path path, final String gridSquare) throws IOException, FactoryException {
+    public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_Woodland.shp").toFile();
         new MultiploygonFileLoader(file, featureGrid.getBounds(), this::onNewWoodland).processFile();
     }
@@ -53,7 +52,7 @@ public class WoodlandGenerator {
             this.feature = feature;
         }
 
-        private double density;
-        private byte feature;
+        private final double density;
+        private final byte feature;
     }
 }

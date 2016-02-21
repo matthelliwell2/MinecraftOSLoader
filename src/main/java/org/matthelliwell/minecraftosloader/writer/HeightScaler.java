@@ -1,10 +1,10 @@
 package org.matthelliwell.minecraftosloader.writer;
 
-public class HeightScaler {
+class HeightScaler {
     private static final float LOWEST = 1;
     private static final float HIGHEST = 240;
-    private float offset;
-    private float scale;
+    private final float offset;
+    private final float scale;
 
     public HeightScaler(final float minHeight, final float maxHeight) {
         scale = (float) Math.min(1.0, (HIGHEST - LOWEST) / (maxHeight - minHeight));

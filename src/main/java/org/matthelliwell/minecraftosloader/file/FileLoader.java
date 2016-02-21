@@ -24,13 +24,13 @@ public class FileLoader {
     private Consumer<SimpleFeature> onNewFeature;
 
 
-    public FileLoader(final File file) throws IOException {
+    FileLoader(final File file) throws IOException {
         this.inputFile = file;
         final FileDataStore store = FileDataStoreFinder.getDataStore(file);
         this.featureSource = store.getFeatureSource();
     }
 
-    public void setOnNewFeature(final Consumer<SimpleFeature> onNewFeature) {
+    void setOnNewFeature(final Consumer<SimpleFeature> onNewFeature) {
         this.onNewFeature = onNewFeature;
     }
 

@@ -34,7 +34,6 @@ import org.matthelliwell.minecraftosloader.feature.ImportantBuildingGenerator;
 import org.matthelliwell.minecraftosloader.feature.LakeGenerator;
 import org.matthelliwell.minecraftosloader.feature.RailwayGenerator;
 import org.matthelliwell.minecraftosloader.feature.RoadGenerator;
-import org.matthelliwell.minecraftosloader.feature.RoadTunnelGenerator;
 import org.matthelliwell.minecraftosloader.feature.StreamGenerator;
 import org.matthelliwell.minecraftosloader.feature.TidalWaterGenerator;
 import org.matthelliwell.minecraftosloader.feature.WoodlandGenerator;
@@ -48,7 +47,7 @@ public class WorldWriter {
     private long blockCount = 0;
 
     private World world;
-    private RailwayWriter railwayWriter = new RailwayWriter();
+    private final RailwayWriter railwayWriter = new RailwayWriter();
 
     public static void main(String[] argv) throws IOException, FactoryException {
         if ( argv.length != 4 ) {
@@ -63,7 +62,7 @@ public class WorldWriter {
     private void generate(final String gridSquare,
                           final String regionNumber,
                           final String terrainDataDir,
-                          final String localDataDir) throws IOException, FactoryException {
+                          final String localDataDir) throws IOException {
 
         // Checks the files exist now to avoid errors after we've spent ages loading one of the files
         final Path terrainDataPath = Paths.get(terrainDataDir);
@@ -86,40 +85,59 @@ public class WorldWriter {
 
         // Load functional sites before buildings as building may be inside these so don't want to overwrite the building
         System.out.println("Adding functional sites");
+        Date tick = new Date();
         new FunctionalSiteGenerator(featureGrid).generate(localDataPath, gridSquare);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         System.out.println("Adding roads");
+        tick = new Date();
         new RoadGenerator(featureGrid).generate(localDataPath, gridSquare);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         System.out.println("Adding important buildings");
+        tick = new Date();
         new ImportantBuildingGenerator(featureGrid).generate(localDataPath, gridSquare);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         System.out.println("Adding buildings");
+        tick = new Date();
         new BuildingGenerator(featureGrid).generate(localDataPath, gridSquare);
-
-        System.out.println("Adding road tunnels");
-        new RoadTunnelGenerator(featureGrid).generate(localDataPath, gridSquare);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         System.out.println("Adding woodland");
+        tick = new Date();
         new WoodlandGenerator(featureGrid).generate(localDataPath, gridSquare);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         System.out.println("Adding lakes");
+        tick = new Date();
         new LakeGenerator(featureGrid).generate(localDataPath, gridSquare);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         System.out.println("Adding streams");
+        tick = new Date();
         new StreamGenerator(featureGrid).generate(localDataPath, gridSquare);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         System.out.println("Adding glass houses");
+        tick = new Date();
         new GlassHouseGenerator(featureGrid).generate(localDataPath, gridSquare);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         System.out.println("Adding tidal area");
+        tick = new Date();
         new TidalWaterGenerator(featureGrid).generate(localDataPath, gridSquare);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         System.out.println("Adding foreshore");
+        tick = new Date();
         new ForeshoreGenerator(featureGrid).generate(localDataPath, gridSquare);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         System.out.println("Adding railways");
+        tick = new Date();
         new RailwayGenerator(featureGrid).generate(localDataPath, gridSquare);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         // We'll surround the map with water and bed rock.
         final DefaultLayers layers = new DefaultLayers();
@@ -133,6 +151,7 @@ public class WorldWriter {
         world = new World(level, layers);
 
         System.out.println("Adding blocks to regions");
+        tick = new Date();
         final AtomicInteger count = new AtomicInteger(0);
         final int maxCount = heightGrid.getNumCells();
         final HeightScaler scaler = new HeightScaler(heightGrid.getMinHeight(), heightGrid.getMaxHeight());
@@ -156,17 +175,20 @@ public class WorldWriter {
             }
         });
 
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
         setSpawnPoint(level, heightGrid);
 
         System.out.println("Saving the world");
+        tick = new Date();
         world.save();
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         final Date endTime = new Date();
         final long elapsed = (endTime.getTime() - startTime.getTime()) / 1000 / 60;
 
         System.out.println("Scaling height by " + scaler.getScale() * 100 + "%");
         System.out.println("z = -y + " + (int)(realBounds.getMinY() + realBounds.getMaxY()));
-        System.out.println("Written " + blockCount + " blocks in " + elapsed + " minutes");
+        System.out.println("Generated " + blockCount + " blocks in " + elapsed + " minutes");
     }
 
     private List<IBlock> setBlocksForColumn(final int x, final int y, final int height, final FeatureGrid featureGrid, final HeightGrid heightGrid) {

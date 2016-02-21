@@ -11,12 +11,10 @@ import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdge;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import com.vividsolutions.jts.triangulate.quadedge.Vertex;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.matthelliwell.minecraftosloader.file.Contour;
 import org.matthelliwell.minecraftosloader.file.ContourFileLoader;
-import org.matthelliwell.minecraftosloader.file.SpotHeightFileLoader;
 import org.matthelliwell.minecraftosloader.file.SpotHeight;
-import org.opengis.referencing.FactoryException;
+import org.matthelliwell.minecraftosloader.file.SpotHeightFileLoader;
 
 /**
  * Loads the height grid with values from the OS files and interpolation
@@ -32,7 +30,7 @@ public class HeightGenerator {
      * @param regionNumber Which files should be processed
      * @return Object representing the heights
      */
-    public HeightGrid generate(final Path path, final String gridSquare, final String regionNumber) throws IOException, FactoryException {
+    public HeightGrid generate(final Path path, final String gridSquare, final String regionNumber) throws IOException {
 
         // First load the contour file. We use this to set the bounds of the data and there we need to load it first
         final File contourFile = path.resolve(gridSquare.toUpperCase() + regionNumber + "_line.shp").toFile();

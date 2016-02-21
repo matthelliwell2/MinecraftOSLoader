@@ -11,7 +11,6 @@ import com.vividsolutions.jts.geom.Point;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.matthelliwell.minecraftosloader.file.Road;
 import org.matthelliwell.minecraftosloader.file.RoadFileLoader;
-import org.opengis.referencing.FactoryException;
 
 public class RoadGenerator {
 
@@ -23,7 +22,7 @@ public class RoadGenerator {
         this.featureGrid = featureGrid;
     }
 
-    public void generate(final Path path, final String gridSquare) throws IOException, FactoryException {
+    public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_Road.shp").toFile();
         new RoadFileLoader(file, featureGrid.getBounds(), this::onNewRoad).processFile();
     }

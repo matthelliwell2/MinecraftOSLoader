@@ -6,7 +6,6 @@ import java.nio.file.Path;
 
 import com.vividsolutions.jts.geom.Point;
 import org.matthelliwell.minecraftosloader.file.MultiploygonFileLoader;
-import org.opengis.referencing.FactoryException;
 
 public class ForeshoreGenerator {
     private final FeatureGrid featureGrid;
@@ -14,7 +13,7 @@ public class ForeshoreGenerator {
         this.featureGrid = featureGrid;
     }
 
-    public void generate(final Path path, final String gridSquare) throws IOException, FactoryException {
+    public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_Foreshore.shp").toFile();
 
         // Not everywhere has seaside

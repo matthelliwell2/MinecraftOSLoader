@@ -8,7 +8,7 @@ import net.morbz.minecraft.blocks.states.Facing4State;
 import org.matthelliwell.minecraftosloader.feature.FeatureGrid;
 import org.matthelliwell.minecraftosloader.feature.HeightGrid;
 
-public class RailwayWriter {
+class RailwayWriter {
     private static final int EAST = 1;
     private static final int WEST = -1;
 

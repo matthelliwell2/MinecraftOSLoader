@@ -25,16 +25,11 @@ public class ContourFileLoader extends FileLoader {
 
 
     private void onNewFeature(final SimpleFeature feature) {
-
-        try {
-            onNewContour.accept(loadContour(feature));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        onNewContour.accept(loadContour(feature));
     }
 
 
-    private Contour loadContour(final SimpleFeature feature) throws IOException {
+    private Contour loadContour(final SimpleFeature feature) {
         final Contour contour = new Contour();
 
         final Collection<? extends Property> properties = feature.getValue();

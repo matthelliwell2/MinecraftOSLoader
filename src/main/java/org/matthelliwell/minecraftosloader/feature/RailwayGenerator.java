@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import org.matthelliwell.minecraftosloader.file.MultilineStringFileLoader;
-import org.opengis.referencing.FactoryException;
 
 public class RailwayGenerator {
     private final FeatureGrid featureGrid;
@@ -16,7 +15,7 @@ public class RailwayGenerator {
         this.featureGrid = featureGrid;
     }
 
-    public void generate(final Path path, final String gridSquare) throws IOException, FactoryException {
+    public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_RailwayTrack.shp").toFile();
         new MultilineStringFileLoader(file, featureGrid.getBounds(), this::onNewRailway).processFile();
     }

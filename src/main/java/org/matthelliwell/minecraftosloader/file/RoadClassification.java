@@ -38,6 +38,6 @@ public enum RoadClassification {
         return width;
     }
 
-    private String name;
-    private float width;
+    private final String name;
+    private final float width;
 }

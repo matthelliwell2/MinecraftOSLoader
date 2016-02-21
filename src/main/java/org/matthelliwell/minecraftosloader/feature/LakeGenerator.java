@@ -6,7 +6,6 @@ import java.nio.file.Path;
 
 import com.vividsolutions.jts.geom.Point;
 import org.matthelliwell.minecraftosloader.file.MultiploygonFileLoader;
-import org.opengis.referencing.FactoryException;
 
 /**
  * Loads the lakes/ponds etc into the feature grid
@@ -20,7 +19,7 @@ public class LakeGenerator {
 
     }
 
-    public void generate(final Path path, final String gridSquare) throws IOException, FactoryException {
+    public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_SurfaceWater_Area.shp").toFile();
         new MultiploygonFileLoader(file, featureGrid.getBounds(), this::onNewPointInLake).processFile();
     }

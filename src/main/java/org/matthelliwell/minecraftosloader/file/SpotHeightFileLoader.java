@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -25,14 +24,10 @@ public class SpotHeightFileLoader extends FileLoader {
 
 
     private void onNewFeature(final SimpleFeature feature) {
-        try {
-            onNewSpotHeight.accept(loadSpotHeight(feature));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        onNewSpotHeight.accept(loadSpotHeight(feature));
     }
 
-    private SpotHeight loadSpotHeight(final SimpleFeature feature) throws IOException {
+    private SpotHeight loadSpotHeight(final SimpleFeature feature) {
         final SpotHeight spotHeight = new SpotHeight();
 
         final Collection<? extends Property> properties = feature.getValue();
