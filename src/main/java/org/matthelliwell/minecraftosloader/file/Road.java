@@ -3,14 +3,13 @@ package org.matthelliwell.minecraftosloader.file;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import org.opengis.geometry.BoundingBox;
 
 public class Road {
 
     private MultiLineString multiLineString;
     private RoadClassification classification;
 
-    public Road()
+    public Road() {
     }
 
     public void setMultiLineString(final MultiLineString multiLineString) {
