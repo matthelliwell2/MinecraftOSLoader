@@ -78,14 +78,17 @@ public class WorldWriter {
         final Date startTime = new Date();
 
         // Process the heigh related features as we need the height grid before we can do much else
+        System.out.println("Calculating heights");
+        Date tick = new Date();
         final HeightGrid heightGrid = new HeightGenerator().generate(terrainDataPath, gridSquare, regionNumber);
+        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         // Create the feature grid into which we'll do the features on the terrain
         final FeatureGrid featureGrid = new FeatureGrid(heightGrid.getBounds());
 
         // Load functional sites before buildings as building may be inside these so don't want to overwrite the building
         System.out.println("Adding functional sites");
-        Date tick = new Date();
+        tick = new Date();
         new FunctionalSiteGenerator(featureGrid).generate(localDataPath, gridSquare);
         System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
@@ -170,7 +173,7 @@ public class WorldWriter {
             }
 
             count.getAndIncrement();
-            if ( count.get() % 10000 == 0 ) {
+            if ( count.get() % 10000000 == 0 ) {
                 System.out.println("Done " + 100.0 * count.get()/maxCount + " %");
             }
         });

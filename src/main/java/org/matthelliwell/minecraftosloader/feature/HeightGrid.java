@@ -76,29 +76,28 @@ public class HeightGrid {
     }
 
     public int getMinX() {
-//        return 333616;
+//        return 378965;
         return (int)bounds.getMinX();
     }
 
     public int getMaxX() {
-//        return 334450;
+//        return 379798;
         return (int)bounds.getMaxX();
     }
 
     public int getMinY() {
-//        return 390000;
+//        return 355288;
         return (int)bounds.getMinY();
     }
 
     public int getMaxY() {
-//        return 390683;
+//        return 355945;
         return (int)bounds.getMaxY();
     }
 
     public ReferencedEnvelope getBounds() {
         // We create a new bounds here so we can manually set the min/max x and y if we want to test with a smaller area
         return new ReferencedEnvelope(getMinX(), getMaxX(), getMinY(), getMaxY(), bounds.getCoordinateReferenceSystem());
-//        return bounds;
     }
 
 
