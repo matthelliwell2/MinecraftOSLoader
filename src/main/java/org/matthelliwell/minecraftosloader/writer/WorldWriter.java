@@ -64,6 +64,17 @@ public class WorldWriter {
                           final String terrainDataDir,
                           final String localDataDir) throws IOException {
 
+        // We'll surround the map with water and bed rock.
+        final DefaultLayers layers = new DefaultLayers();
+        layers.setLayer(0, Material.BEDROCK);
+        layers.setLayer(1, Material.WATER);
+
+        final Level level = new Level(gridSquare + "-" + regionNumber, new FlatGenerator(layers));
+        level.setGameType(GameType.CREATIVE);
+        level.setAllowCommands(true);
+
+        world = new World(level, layers, false);
+
         // Checks the files exist now to avoid errors after we've spent ages loading one of the files
         final Path terrainDataPath = Paths.get(terrainDataDir);
         if ( Files.notExists(terrainDataPath) || !Files.isDirectory(terrainDataPath)) {
@@ -142,17 +153,6 @@ public class WorldWriter {
         new RailwayGenerator(featureGrid).generate(localDataPath, gridSquare);
         System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
-        // We'll surround the map with water and bed rock.
-        final DefaultLayers layers = new DefaultLayers();
-        layers.setLayer(0, Material.BEDROCK);
-        layers.setLayer(1, Material.WATER);
-
-        final Level level = new Level(gridSquare + "-" + regionNumber, new FlatGenerator(layers));
-        level.setGameType(GameType.CREATIVE);
-        level.setAllowCommands(true);
-
-        world = new World(level, layers);
-
         System.out.println("Adding blocks to regions");
         tick = new Date();
         final AtomicInteger count = new AtomicInteger(0);
@@ -183,7 +183,7 @@ public class WorldWriter {
 
         System.out.println("Saving the world");
         tick = new Date();
-        world.save();
+        world.save(false);
         System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
 
         final Date endTime = new Date();
