@@ -56,6 +56,7 @@ public class HeightGrid {
         int regionsInYDirection = Math.abs((getMaxY() - ystart) / Region.BLOCKS_PER_REGION_SIDE + 1);
 
         // Note these loops will probably only work for positive coords
+        // I hope these loops work and never have to be touched again as I don't like the look of them
         for ( int xregion = 0; xregion < regionsInXDirection; ++xregion) {
             for ( int yregion = 0; yregion < regionsInYDirection; ++yregion) {
                 for ( int x = xstart + xregion * Region.BLOCKS_PER_REGION_SIDE, xcount = 0; x < getMaxX() && xcount < Region.BLOCKS_PER_REGION_SIDE; ++x, ++xcount ) {
