@@ -61,7 +61,7 @@ public class HeightGenerator {
     private void setHeightFromTriangulation() {
         final DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
 
-        // Filter out the zero heights as they aren't set and so shouldn't be used for triangulation
+        // Filter out the unset heights as they aren't set and so shouldn't be used for triangulation
         final List<Coordinate> coords = new ArrayList<>();
         heightGrid.forEach((x, y, h) -> {
             if ( h > Integer.MIN_VALUE ) {

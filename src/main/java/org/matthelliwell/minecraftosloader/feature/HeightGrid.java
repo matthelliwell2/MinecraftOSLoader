@@ -1,6 +1,7 @@
 package org.matthelliwell.minecraftosloader.feature;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import net.morbz.minecraft.world.Region;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.matthelliwell.minecraftosloader.TriConsumer;
 
@@ -38,6 +39,46 @@ public class HeightGrid {
             }
         }
     }
+
+    /**
+     * Iterators over each cell in the grid. We iterate region by region, rather than row by row, to reduce the
+     * amount of cache misses in the region cache.
+     * @param eachCell Function to be called for each cell
+     */
+    public void forEachRegion(TriConsumer<Integer, Integer, Float> eachCell) {
+        // Coords of lower left corner of first region that in the area
+        int xstart = (getMinX() / Region.BLOCKS_PER_REGION_SIDE) * Region.BLOCKS_PER_REGION_SIDE;
+        int ystart = convertCoord(getMinY());
+        ystart = (ystart / Region.BLOCKS_PER_REGION_SIDE) * Region.BLOCKS_PER_REGION_SIDE;
+        ystart = convertCoord(ystart);
+
+        int regionsInXDirection = Math.abs((getMaxX() - xstart) / Region.BLOCKS_PER_REGION_SIDE + 1);
+        int regionsInYDirection = Math.abs((getMaxY() - ystart) / Region.BLOCKS_PER_REGION_SIDE + 1);
+
+        // Note these loops will probably only work for positive coords
+        for ( int xregion = 0; xregion < regionsInXDirection; ++xregion) {
+            for ( int yregion = 0; yregion < regionsInYDirection; ++yregion) {
+                for ( int x = xstart + xregion * Region.BLOCKS_PER_REGION_SIDE, xcount = 0; x < getMaxX() && xcount < Region.BLOCKS_PER_REGION_SIDE; ++x, ++xcount ) {
+                    for ( int y = ystart + yregion * Region.BLOCKS_PER_REGION_SIDE, ycount = 0; y < getMaxY() && ycount < Region.BLOCKS_PER_REGION_SIDE; ++y, ++ycount ) {
+                        // If we're iteratoring through a region that only partly intersects this grid then we need to skip
+                        // over the coordinates that are outside the grid
+                        if (x >= getMinX() && x <= getMaxX() && y >= getMinY() && y <= getMaxY()) {
+                            eachCell.accept(x, y, getHeight(x, y));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Converts from a y coord on the grid to a z coord in minecraft and vica vera
+     */
+    private int convertCoord(int c) {
+        final ReferencedEnvelope realBounds = getRealBounds();
+        return (int) (-c + realBounds.getMinY() + realBounds.getMaxY());
+    }
+
 
     public void setHeight(final double x, final double y, final double height) {
 

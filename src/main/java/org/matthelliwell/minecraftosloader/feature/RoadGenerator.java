@@ -8,6 +8,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.prep.PreparedGeometry;
+import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.matthelliwell.minecraftosloader.file.Road;
 import org.matthelliwell.minecraftosloader.file.RoadFileLoader;
@@ -29,6 +31,8 @@ public class RoadGenerator {
 
     private void onNewRoad(final Road road) {
         final Geometry result = road.getFullWidthRoad();
+        final PreparedGeometry fastBoudary = PreparedGeometryFactory.prepare(result);
+
         long minX = Integer.MAX_VALUE;
         long minY = Integer.MAX_VALUE;
         long maxX = Integer.MIN_VALUE;
@@ -43,7 +47,7 @@ public class RoadGenerator {
         for (long x = minX; x <= maxX; ++x) {
             for (long y = minY; y <= maxY; ++y) {
                 final Point p = GEOMETRY_FACTORY.createPoint(new Coordinate(x, y));
-                if (result.intersects(p)) {
+                if (fastBoudary.intersects(p)) {
                     featureGrid.setFeature((int)x, (int)y, FeatureGrid.ROAD);
                 }
             }

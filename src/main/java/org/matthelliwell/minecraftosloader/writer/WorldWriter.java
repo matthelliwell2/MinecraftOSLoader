@@ -161,7 +161,7 @@ public class WorldWriter {
 
         final ReferencedEnvelope realBounds = heightGrid.getRealBounds();
 
-        heightGrid.forEach((x, y, h) -> {
+        heightGrid.forEachRegion((x, y, h) -> {
             final int scaledHeight = Math.round(scaler.scale(h));
             if ( scaledHeight > 0 ) {
                 final List<IBlock> blocks = setBlocksForColumn(x, y, scaledHeight, featureGrid, heightGrid);
