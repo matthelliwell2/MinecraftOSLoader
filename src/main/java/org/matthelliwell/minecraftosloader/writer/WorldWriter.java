@@ -92,7 +92,7 @@ public class WorldWriter {
         System.out.println("Calculating heights");
         Date tick = new Date();
         final HeightGrid heightGrid = new HeightGenerator().generate(terrainDataPath, gridSquare, regionNumber);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         // Create the feature grid into which we'll do the features on the terrain
         final FeatureGrid featureGrid = new FeatureGrid(heightGrid.getBounds());
@@ -101,57 +101,57 @@ public class WorldWriter {
         System.out.println("Adding functional sites");
         tick = new Date();
         new FunctionalSiteGenerator(featureGrid).generate(localDataPath, gridSquare);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         System.out.println("Adding roads");
         tick = new Date();
         new RoadGenerator(featureGrid).generate(localDataPath, gridSquare);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         System.out.println("Adding important buildings");
         tick = new Date();
         new ImportantBuildingGenerator(featureGrid).generate(localDataPath, gridSquare);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         System.out.println("Adding buildings");
         tick = new Date();
         new BuildingGenerator(featureGrid).generate(localDataPath, gridSquare);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         System.out.println("Adding woodland");
         tick = new Date();
         new WoodlandGenerator(featureGrid).generate(localDataPath, gridSquare);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         System.out.println("Adding lakes");
         tick = new Date();
         new LakeGenerator(featureGrid).generate(localDataPath, gridSquare);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         System.out.println("Adding streams");
         tick = new Date();
         new StreamGenerator(featureGrid).generate(localDataPath, gridSquare);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         System.out.println("Adding glass houses");
         tick = new Date();
         new GlassHouseGenerator(featureGrid).generate(localDataPath, gridSquare);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         System.out.println("Adding tidal area");
         tick = new Date();
         new TidalWaterGenerator(featureGrid).generate(localDataPath, gridSquare);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         System.out.println("Adding foreshore");
         tick = new Date();
         new ForeshoreGenerator(featureGrid).generate(localDataPath, gridSquare);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         System.out.println("Adding railways");
         tick = new Date();
         new RailwayGenerator(featureGrid).generate(localDataPath, gridSquare);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         System.out.println("Adding blocks to regions");
         tick = new Date();
@@ -161,7 +161,7 @@ public class WorldWriter {
 
         final ReferencedEnvelope realBounds = heightGrid.getRealBounds();
 
-        heightGrid.forEachRegion((x, y, h) -> {
+        heightGrid.forEachRegionInParallel((x, y, h) -> {
             final int scaledHeight = Math.round(scaler.scale(h));
             if ( scaledHeight > 0 ) {
                 final List<IBlock> blocks = setBlocksForColumn(x, y, scaledHeight, featureGrid, heightGrid);
@@ -169,29 +169,29 @@ public class WorldWriter {
                 // North is negative Z so we need to change sign of the Z coord being used otherwise left and right
                 // will be switched. However J2Blocks, may be due to my change, has a problem with negative coords,
                 // creating a wierd artifact like the Berlin wall, so we need to shift the coords to be positive
-                world.setBlocks(x, (int) (-y + realBounds.getMinY() + realBounds.getMaxY()), blocks.toArray(new IBlock[]{}));
+                world.setBlocks(x, (int) (-y + realBounds.getMinY() + realBounds.getMaxY()), blocks.toArray(new IBlock[blocks.size()]));
             }
 
             count.getAndIncrement();
-            if ( count.get() % 10000000 == 0 ) {
-                System.out.println("Done " + 100.0 * count.get()/maxCount + " %");
+            if ( count.get() % 10_000_000 == 0 ) {
+                System.out.println("Done " + (int)(100.0 * count.get()/maxCount) + "%");
             }
         });
 
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
         setSpawnPoint(level, heightGrid);
 
         System.out.println("Saving the world");
         tick = new Date();
         world.save(false);
-        System.out.println("Time (mins) = " + (new Date().getTime() - tick.getTime()) / 1000 / 60);
+        System.out.println("Time (secs) = " + (new Date().getTime() - tick.getTime()) / 1000);
 
         final Date endTime = new Date();
-        final long elapsed = (endTime.getTime() - startTime.getTime()) / 1000 / 60;
+        final long elapsed = (endTime.getTime() - startTime.getTime()) / 1000;
 
         System.out.println("Scaling height by " + scaler.getScale() * 100 + "%");
         System.out.println("z = -y + " + (int)(realBounds.getMinY() + realBounds.getMaxY()));
-        System.out.println("Generated " + blockCount + " blocks in " + elapsed + " minutes");
+        System.out.println("Generated " + blockCount + " blocks in " + elapsed + " secs");
     }
 
     private List<IBlock> setBlocksForColumn(final int x, final int y, final int height, final FeatureGrid featureGrid, final HeightGrid heightGrid) {

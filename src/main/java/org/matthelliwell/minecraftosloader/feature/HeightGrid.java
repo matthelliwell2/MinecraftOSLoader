@@ -1,5 +1,11 @@
 package org.matthelliwell.minecraftosloader.feature;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import net.morbz.minecraft.world.Region;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -10,12 +16,17 @@ import org.matthelliwell.minecraftosloader.TriConsumer;
  * in the shape files.
  */
 public class HeightGrid {
+
     private final float[][] heights;
     private float minHeight = Integer.MAX_VALUE;
     private float maxHeight = Integer.MIN_VALUE;
     final private ReferencedEnvelope bounds;
     private final int minX;
     private final int minY;
+
+    // Used to iterate through region in parallel. Note that the pool size must be < region cache size. This is becaus
+    // we assume that regions don't get kicked out the cache during processing
+    private static final int NUM_THREADS = 4;
 
     public HeightGrid(final ReferencedEnvelope bounds) {
         this.bounds = bounds;
@@ -45,7 +56,11 @@ public class HeightGrid {
      * amount of cache misses in the region cache.
      * @param eachCell Function to be called for each cell
      */
-    public void forEachRegion(TriConsumer<Integer, Integer, Float> eachCell) {
+    public void forEachRegionInParallel(TriConsumer<Integer, Integer, Float> eachCell) {
+        // Create a new exector for each call so that we can explicitly shut it down as it doesn't use daemon
+        // threads by default, otherwise the program won't exit
+        final ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+
         // Coords of lower left corner of first region that in the area
         int xstart = (getMinX() / Region.BLOCKS_PER_REGION_SIDE) * Region.BLOCKS_PER_REGION_SIDE;
         int ystart = convertCoord(getMinY());
@@ -57,19 +72,26 @@ public class HeightGrid {
 
         // Note these loops will probably only work for positive coords
         // I hope these loops work and never have to be touched again as I don't like the look of them
+        final List<Future> futures = new ArrayList<>(regionsInXDirection + regionsInYDirection);
         for ( int xregion = 0; xregion < regionsInXDirection; ++xregion) {
             for ( int yregion = 0; yregion < regionsInYDirection; ++yregion) {
-                for ( int x = xstart + xregion * Region.BLOCKS_PER_REGION_SIDE, xcount = 0; x < getMaxX() && xcount < Region.BLOCKS_PER_REGION_SIDE; ++x, ++xcount ) {
-                    for ( int y = ystart + yregion * Region.BLOCKS_PER_REGION_SIDE, ycount = 0; y < getMaxY() && ycount < Region.BLOCKS_PER_REGION_SIDE; ++y, ++ycount ) {
-                        // If we're iteratoring through a region that only partly intersects this grid then we need to skip
-                        // over the coordinates that are outside the grid
-                        if (x >= getMinX() && x <= getMaxX() && y >= getMinY() && y <= getMaxY()) {
-                            eachCell.accept(x, y, getHeight(x, y));
-                        }
-                    }
-                }
+                futures.add(executor.submit(new ForEachBlockInRegion(eachCell, xstart, ystart, xregion, yregion)));
             }
         }
+
+        waitForFuturesToFinish(executor, futures);
+    }
+
+    private static void waitForFuturesToFinish(final ExecutorService executor, final List<Future> futures) {
+        for ( Future f: futures) {
+            try {
+                f.get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        executor.shutdown();
     }
 
     /**
@@ -157,5 +179,36 @@ public class HeightGrid {
 
     public int getNumCells() {
         return heights.length * heights[0].length;
+    }
+
+    private class ForEachBlockInRegion implements Runnable {
+        final TriConsumer<Integer, Integer, Float> eachCell;
+        final int xstart;
+        final int ystart;
+        final int xregion;
+        final int yregion;
+
+        public ForEachBlockInRegion(final TriConsumer<Integer, Integer, Float> eachCell, final int xstart, final int ystart, final int xregion, final int yregion) {
+            this.eachCell = eachCell;
+            this.xstart = xstart;
+            this.ystart = ystart;
+            this.xregion = xregion;
+            this.yregion = yregion;
+        }
+
+        @Override
+        public void run() {
+//            System.out.println("Iterating region x=" + xregion + ", y=" + yregion);
+            for (int x = xstart + xregion * Region.BLOCKS_PER_REGION_SIDE, xcount = 0; x < getMaxX() && xcount < Region.BLOCKS_PER_REGION_SIDE; ++x, ++xcount ) {
+                for ( int y = ystart + yregion * Region.BLOCKS_PER_REGION_SIDE, ycount = 0; y < getMaxY() && ycount < Region.BLOCKS_PER_REGION_SIDE; ++y, ++ycount ) {
+                    // If we're iteratoring through a region that only partly intersects this grid then we need to skip
+                    // over the coordinates that are outside the grid
+                    if (x >= getMinX() && x <= getMaxX() && y >= getMinY() && y <= getMaxY()) {
+                        eachCell.accept(x, y, getHeight(x, y));
+                    }
+                }
+            }
+//            System.out.println("Finished iterating region x=" + xregion + ", y=" + yregion);
+        }
     }
 }
