@@ -21,7 +21,9 @@ public class FunctionalSiteGenerator {
 
     public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_FunctionalSite.shp").toFile();
-        new MultiploygonFileLoader(file, featureGrid.getBounds(), this::onNewPointInBuilding).processFile();
+        if (file.exists()) {
+            new MultiploygonFileLoader(file, featureGrid.getBounds(), this::onNewPointInBuilding).processFile();
+        }
     }
 
     private void onNewPointInBuilding(final Point p) {

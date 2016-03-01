@@ -26,7 +26,9 @@ public class RoadGenerator {
 
     public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_Road.shp").toFile();
-        new RoadFileLoader(file, featureGrid.getBounds(), this::onNewRoad).processFile();
+        if (file.exists()) {
+            new RoadFileLoader(file, featureGrid.getBounds(), this::onNewRoad).processFile();
+        }
     }
 
     private void onNewRoad(final Road road) {

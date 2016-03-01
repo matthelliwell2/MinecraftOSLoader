@@ -1,6 +1,8 @@
 package org.matthelliwell.minecraftosloader.feature;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.matthelliwell.util.ByteArray2D;
 
 /**
  * Contains an indication of what is in each cell so that the writer can generate the appropriate blocks. This
@@ -26,49 +28,40 @@ public class FeatureGrid {
 
     final private ReferencedEnvelope bounds;
 
-    private final byte[][] features;
-    private final int minX;
-    private final int maxX;
-    private final int minY;
-    private final int maxY;
+    private final ByteArray2D features;
 
     public FeatureGrid(final ReferencedEnvelope bounds) {
-        this.bounds = bounds;
-
-        features = new byte[(int)(bounds.getWidth()) + 1][(int)(bounds.getHeight()) + 1];
-        minX = (int)bounds.getMinX();
-        maxX = (int)bounds.getMaxX();
-        minY = (int)bounds.getMinY();
-        maxY = (int)bounds.getMaxY();
+        // Create a new bounds so it has the same rounding as we are using in are max/min calculations
+        this.bounds = new ReferencedEnvelope((int)bounds.getMinX(),
+                (int)bounds.getMaxX(),
+                (int)bounds.getMinY(),
+                (int)bounds.getMaxY(),
+                bounds.getCoordinateReferenceSystem());
+        features = new ByteArray2D(getMaxX() - getMinX() + 1, getMaxY() - getMinY() + 1, getMinX(), getMinY());
     }
 
     public byte getFeature(final int x, final int y) {
-        return features[x - minX][y - minY];
+        return features.get(x, y);
     }
 
     public byte getFeatureWithBoundsCheck(final int x, final int y) {
-        if ( inBounds(x, y) ) {
-            return features[x - minX][y - minY];
+        if ( withinBounds(x, y) ) {
+            return getFeature(x, y);
         } else {
             return GRASS;
         }
     }
 
-    private boolean inBounds(final int x, final int y) {
-        return x >= minX && x <= maxX && y >= minY && y <= maxY;
+    private boolean withinBounds(final int x, final int y) {
+        return bounds.contains(new Coordinate(x, y));
     }
 
     public void setFeature(final int x, final int y, final byte feature) {
-        final int xCoord = x - minX;
-        final int yCoord = y - minY;
-
-        if (xCoord < 0 || xCoord >= features.length || yCoord < 0 || yCoord >= features[0].length) {
-            // We sometimes get some coords outside the range. Presumably this is due to the interpolation
-            // returning some extra points. We just ignore them.
-            return;
+        // We sometimes get some coords outside the range. Presumably this is due to the interpolation
+        // returning some extra points. We just ignore them.
+        if (withinBounds(x, y)) {
+            features.set(x, y, feature);
         }
-
-        features[xCoord][yCoord] = feature;
     }
 
     public ReferencedEnvelope getBounds() {
@@ -76,4 +69,21 @@ public class FeatureGrid {
 //        return new ReferencedEnvelope(getMinX(), getMaxX(), getMinY(), getMaxY(), bounds.getCoordinateReferenceSystem());
         return bounds;
     }
+
+    private int getMinX() {
+        return (int)bounds.getMinX();
+    }
+
+    private int getMaxX() {
+        return (int)bounds.getMaxX();
+    }
+
+    private int getMinY() {
+        return (int)bounds.getMinY();
+    }
+
+    private int getMaxY() {
+        return (int)bounds.getMaxY();
+    }
+
 }

@@ -21,7 +21,9 @@ public class LakeGenerator {
 
     public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_SurfaceWater_Area.shp").toFile();
-        new MultiploygonFileLoader(file, featureGrid.getBounds(), this::onNewPointInLake).processFile();
+        if (file.exists()) {
+            new MultiploygonFileLoader(file, featureGrid.getBounds(), this::onNewPointInLake).processFile();
+        }
     }
 
     private void onNewPointInLake(final Point p) {

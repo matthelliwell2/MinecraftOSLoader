@@ -17,9 +17,9 @@ public class TidalWaterGenerator {
         final File file = path.resolve(gridSquare.toUpperCase() + "_TidalWater.shp").toFile();
 
         // Not everywhere has seaside
-//        if ( file.exists() ) {
+        if ( file.exists() ) {
             new MultiploygonFileLoader(file, featureGrid.getBounds(), this::onNewPointInWater).processFile();
-//        }
+        }
     }
 
     private void onNewPointInWater(final Point p) {

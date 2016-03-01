@@ -75,21 +75,21 @@ class RailwayWriter {
 
     private boolean isSlopingNorth(final int x, final int y, final FeatureGrid featureGrid, final HeightGrid heightGrid) {
         return featureGrid.getFeatureWithBoundsCheck(x, y + NORTH) == FeatureGrid.RAILWAY &&
-                (int)heightGrid.getHeight(x, y) < (int)heightGrid.getHeightWithBounds(x, y + NORTH);
+                (int)heightGrid.getHeight(x, y) < (int)heightGrid.getHeightWithBoundsCheck(x, y + NORTH);
     }
 
     private boolean isSlopingSouth(final int x, final int y, final FeatureGrid featureGrid, final HeightGrid heightGrid) {
         return featureGrid.getFeatureWithBoundsCheck(x, y + SOUTH) == FeatureGrid.RAILWAY &&
-                (int)heightGrid.getHeight(x, y) < (int)heightGrid.getHeightWithBounds(x, y + SOUTH);
+                (int)heightGrid.getHeight(x, y) < (int)heightGrid.getHeightWithBoundsCheck(x, y + SOUTH);
     }
 
     private boolean isSlopingEast(final int x, final int y, final FeatureGrid featureGrid, final HeightGrid heightGrid) {
         return featureGrid.getFeatureWithBoundsCheck(x + EAST, y) == FeatureGrid.RAILWAY &&
-                (int)heightGrid.getHeight(x, y) < (int)heightGrid.getHeightWithBounds(x + EAST, y);
+                (int)heightGrid.getHeight(x, y) < (int)heightGrid.getHeightWithBoundsCheck(x + EAST, y);
     }
 
     private boolean isSlopingWest(final int x, final int y, final FeatureGrid featureGrid, final HeightGrid heightGrid) {
         return featureGrid.getFeatureWithBoundsCheck(x + WEST, y) == FeatureGrid.RAILWAY &&
-                (int)heightGrid.getHeight(x, y) < (int)heightGrid.getHeightWithBounds(x + WEST, y);
+                (int)heightGrid.getHeight(x, y) < (int)heightGrid.getHeightWithBoundsCheck(x + WEST, y);
     }
 }

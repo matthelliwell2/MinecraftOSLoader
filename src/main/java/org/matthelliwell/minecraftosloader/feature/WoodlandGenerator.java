@@ -29,7 +29,9 @@ public class WoodlandGenerator {
 
     public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_Woodland.shp").toFile();
-        new MultiploygonFileLoader(file, featureGrid.getBounds(), this::onNewWoodland).processFile();
+        if (file.exists()) {
+            new MultiploygonFileLoader(file, featureGrid.getBounds(), this::onNewWoodland).processFile();
+        }
     }
 
     private void onNewWoodland(final Point p) {

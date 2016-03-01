@@ -21,7 +21,9 @@ public class ImportantBuildingGenerator {
 
     public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_ImportantBuilding.shp").toFile();
-        new MultiploygonFileLoader(file, featureGrid.getBounds(), this::onNewPointInSite).processFile();
+        if (file.exists()) {
+            new MultiploygonFileLoader(file, featureGrid.getBounds(), this::onNewPointInSite).processFile();
+        }
     }
 
     private void onNewPointInSite(final Point p) {

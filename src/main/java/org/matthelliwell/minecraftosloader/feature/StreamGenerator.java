@@ -17,7 +17,9 @@ public class StreamGenerator {
 
     public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_SurfaceWater_Line.shp").toFile();
-        new MultilineStringFileLoader(file, featureGrid.getBounds(), this::onNewStream).processFile();
+        if (file.exists()) {
+            new MultilineStringFileLoader(file, featureGrid.getBounds(), this::onNewStream).processFile();
+        }
     }
 
     private void onNewStream(final List<Coordinate> stream) {

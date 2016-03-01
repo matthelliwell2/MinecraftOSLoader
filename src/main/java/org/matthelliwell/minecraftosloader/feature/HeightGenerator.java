@@ -32,8 +32,13 @@ public class HeightGenerator {
      */
     public HeightGrid generate(final Path path, final String gridSquare, final String regionNumber) throws IOException {
 
-        // First load the contour file. We use this to set the bounds of the data and there we need to load it first
+        // First load the contour file. We use this to set the bounds of the data and there we need to load it first.
+        // If we are iterating through all the grid square in a national grid square then some files may not be missing,
+        // eg areas in the sea won't have any data. In this case we just return null.
         final File contourFile = path.resolve(gridSquare.toUpperCase() + regionNumber + "_line.shp").toFile();
+        if (!contourFile.exists()) {
+            return null;
+        }
 
         final ContourFileLoader contourFileLoader = new ContourFileLoader(contourFile, this::onNewContour);
         heightGrid = new HeightGrid(contourFileLoader.getBounds());
@@ -42,8 +47,10 @@ public class HeightGenerator {
         // Now suplement the data from the contours with the spot height data. If this has large bounds than the contour data
         // then we'll just ignore any extra points
         final File spotHeightFile = path.resolve(gridSquare.toUpperCase() + regionNumber + "_point.shp").toFile();
-        final SpotHeightFileLoader spotHeightFileLoader = new SpotHeightFileLoader(spotHeightFile, this::onNewSpotHeight);
-        spotHeightFileLoader.processFile();
+        if ( spotHeightFile.exists() ) {
+            final SpotHeightFileLoader spotHeightFileLoader = new SpotHeightFileLoader(spotHeightFile, this::onNewSpotHeight);
+            spotHeightFileLoader.processFile();
+        }
 
         // Use triangulation to set heights between the points we have
         setHeightFromTriangulation();

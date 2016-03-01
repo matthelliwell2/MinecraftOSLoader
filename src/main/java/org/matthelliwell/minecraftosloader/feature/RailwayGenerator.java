@@ -17,7 +17,9 @@ public class RailwayGenerator {
 
     public void generate(final Path path, final String gridSquare) throws IOException {
         final File file = path.resolve(gridSquare.toUpperCase() + "_RailwayTrack.shp").toFile();
-        new MultilineStringFileLoader(file, featureGrid.getBounds(), this::onNewRailway).processFile();
+        if ( file.exists()) {
+            new MultilineStringFileLoader(file, featureGrid.getBounds(), this::onNewRailway).processFile();
+        }
     }
 
     private void onNewRailway(final List<Coordinate> stream) {
