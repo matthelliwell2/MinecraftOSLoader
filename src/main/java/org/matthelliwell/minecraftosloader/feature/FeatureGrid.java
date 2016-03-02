@@ -65,8 +65,6 @@ public class FeatureGrid {
     }
 
     public ReferencedEnvelope getBounds() {
-        // TODO
-//        return new ReferencedEnvelope(getMinX(), getMaxX(), getMinY(), getMaxY(), bounds.getCoordinateReferenceSystem());
         return bounds;
     }
 

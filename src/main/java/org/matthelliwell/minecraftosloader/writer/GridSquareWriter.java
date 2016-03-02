@@ -119,7 +119,6 @@ class GridSquareWriter {
                 blocks.add(FlowerBlock.OXEYE_DAISY);
                 break;
             case FeatureGrid.LAKE:
-                // TODO add some depth to the lakes
                 blocks.add(SimpleBlock.WATER);
                 break;
             case FeatureGrid.BUILDING:
