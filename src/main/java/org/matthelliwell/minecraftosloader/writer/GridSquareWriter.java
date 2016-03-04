@@ -69,13 +69,14 @@ class GridSquareWriter {
         final HeightScaler scaler = new HeightScaler(heightGrid.getMinHeight(), heightGrid.getMaxHeight());
 
         heightGrid.forEachRegionInParallel((x, y, h) -> {
-            final int scaledHeight = Math.round(scaler.scale(h));
-            if ( scaledHeight > 0 ) {
-                final List<IBlock> blocks = setBlocksForColumn(x, y, scaledHeight, featureGrid, heightGrid, blockCount);
+                    final int scaledHeight = Math.round(scaler.scale(h));
+                    if (scaledHeight > 0) {
+                        final List<IBlock> blocks = setBlocksForColumn(x, y, scaledHeight, featureGrid, heightGrid, blockCount);
 
-                world.setBlocks(x, CoordConverter.convert(y), blocks.toArray(new IBlock[blocks.size()]));
-            }
-        });
+                        world.setBlocks(x, CoordConverter.convert(y), blocks.toArray(new IBlock[blocks.size()]));
+                    }
+                },
+                (x, y) -> world.calculateSkylightForRegion(x, CoordConverter.convert(y)));
 
         System.out.println("Scaling height by " + scaler.getScale() * 100 + "%");
     }

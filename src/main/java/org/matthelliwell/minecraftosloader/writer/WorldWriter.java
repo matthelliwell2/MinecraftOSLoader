@@ -86,7 +86,6 @@ public class WorldWriter {
 
     /**
      * Spawn point is on Out Stack, kustnorth of the Shetland Islands
-     * @param level
      */
     private void setSpawnPoint(final Level level) {
         level.setSpawnPoint(460_876, 20, 11_236);
