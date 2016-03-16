@@ -32,7 +32,6 @@ import org.matthelliwell.minecraftosloader.feature.WoodlandGenerator;
  * Writes the data for a 10x10km square within a national grid square
  */
 class GridSquareWriter {
-    private static final int MAX_GROUND_DEPTH = 20;
     private final RailwayWriter railwayWriter = new RailwayWriter();
 
     public void write(final World world,
@@ -85,14 +84,8 @@ class GridSquareWriter {
         final List<IBlock> blocks = new ArrayList<>(height + 2);
         blocks.add(SimpleBlock.BEDROCK);
 
-        for ( int h = 1; h < height - MAX_GROUND_DEPTH; ++h ) {
-            blocks.add(SimpleBlock.AIR);
-        }
-
-        for ( int h = height - MAX_GROUND_DEPTH; h < height; ++h ) {
-            if (h > 0) {
-                blocks.add(SimpleBlock.COBBLESTONE);
-            }
+        for ( int h = 1; h < height; ++h ) {
+            blocks.add(SimpleBlock.COBBLESTONE);
         }
 
         switch ( featureGrid.getFeature(x, y) ) {

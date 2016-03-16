@@ -44,7 +44,7 @@ public class HeightGenerator {
         heightGrid = new HeightGrid(contourFileLoader.getBounds());
         contourFileLoader.processFile();
 
-        // Now suplement the data from the contours with the spot height data. If this has large bounds than the contour data
+        // Now suplement the data from the contours with the spot height data. If this has larger bounds than the contour data
         // then we'll just ignore any extra points
         final File spotHeightFile = path.resolve(gridSquare.toUpperCase() + regionNumber + "_point.shp").toFile();
         if ( spotHeightFile.exists() ) {
