@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.function.BiConsumer;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import net.morbz.minecraft.world.Region;
@@ -50,9 +49,9 @@ public class HeightGrid {
     /**
      * Iterators over each cell in the grid. We iterate region by region, rather than row by row, to reduce the
      * amount of cache misses in the region cache.
-     * @param eachCell Function to be called for each cell
+     * @param eachCellPass1 Function to be called for each cell
      */
-    public void forEachRegionInParallel(TriConsumer<Integer, Integer, Float> eachCell, BiConsumer<Integer, Integer> onRegionComplete) {
+    public void forEachRegionInParallel(TriConsumer<Integer, Integer, Float> eachCellPass1, TriConsumer<Integer, Integer, Float> eachCellPass2) {
         // Create a new exector for each call so that we can explicitly shut it down as it doesn't use daemon
         // threads by default, otherwise the program won't exit
         final ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
@@ -76,7 +75,7 @@ public class HeightGrid {
         final List<Future> futures = new ArrayList<>(regionsInXDirection + regionsInYDirection);
         for ( int xregion = 0; xregion < regionsInXDirection; ++xregion) {
             for ( int yregion = 0; yregion < regionsInYDirection; ++yregion) {
-                futures.add(executor.submit(new ForEachBlockInRegion(eachCell, onRegionComplete, xstart, ystart, xregion, yregion)));
+                futures.add(executor.submit(new ForEachBlockInRegion(eachCellPass1, eachCellPass2, xstart, ystart, xregion, yregion)));
             }
         }
 
@@ -152,16 +151,16 @@ public class HeightGrid {
     }
 
     private class ForEachBlockInRegion implements Runnable {
-        final TriConsumer<Integer, Integer, Float> eachCell;
-        final BiConsumer<Integer, Integer> onRegionComplete;
+        final TriConsumer<Integer, Integer, Float> eachCellPass1;
+        final TriConsumer<Integer, Integer, Float> eachCellPass2;
         final int xstart;
         final int ystart;
         final int xregion;
         final int yregion;
 
-        public ForEachBlockInRegion(final TriConsumer<Integer, Integer, Float> eachCell, final BiConsumer<Integer, Integer> onRegionComplete, final int xstart, final int ystart, final int xregion, final int yregion) {
-            this.eachCell = eachCell;
-            this.onRegionComplete = onRegionComplete;
+        public ForEachBlockInRegion(final TriConsumer<Integer, Integer, Float> eachCellPass1, final TriConsumer<Integer, Integer, Float> eachCellPass2, final int xstart, final int ystart, final int xregion, final int yregion) {
+            this.eachCellPass1 = eachCellPass1;
+            this.eachCellPass2 = eachCellPass2;
             this.xstart = xstart;
             this.ystart = ystart;
             this.xregion = xregion;
@@ -170,22 +169,19 @@ public class HeightGrid {
 
         @Override
         public void run() {
-            int xInRegion = Integer.MIN_VALUE;
-            int yInRegion = Integer.MIN_VALUE;
+            onEachCell(eachCellPass1);
+            onEachCell(eachCellPass2);
+        }
+
+        private void onEachCell(final TriConsumer<Integer, Integer, Float> onEachCell) {
             for (int x = xstart + xregion * Region.BLOCKS_PER_REGION_SIDE, xcount = 0; x < getMaxX() && xcount < Region.BLOCKS_PER_REGION_SIDE; ++x, ++xcount ) {
                 for ( int y = ystart + yregion * Region.BLOCKS_PER_REGION_SIDE, ycount = 0; y < getMaxY() && ycount < Region.BLOCKS_PER_REGION_SIDE; ++y, ++ycount ) {
                     // If we're iteratoring through a region that only partly intersects this grid then we need to skip
                     // over the coordinates that are outside the grid
                     if (x >= getMinX() && x <= getMaxX() && y >= getMinY() && y <= getMaxY()) {
-                        eachCell.accept(x, y, getHeight(x, y));
-                        xInRegion = x;
-                        yInRegion = y;
+                        onEachCell.accept(x, y, getHeight(x, y));
                     }
                 }
-            }
-
-            if (xInRegion > Integer.MIN_VALUE && yInRegion > Integer.MIN_VALUE) {
-                onRegionComplete.accept(xInRegion, yInRegion);
             }
         }
     }

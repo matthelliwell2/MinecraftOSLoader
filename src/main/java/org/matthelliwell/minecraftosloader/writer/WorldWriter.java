@@ -86,7 +86,7 @@ public class WorldWriter {
         setSpawnPoint(level);
 
         System.out.println("Saving the world");
-        world.save(false);
+        world.save();
 
         System.out.println("Archiving data");
 

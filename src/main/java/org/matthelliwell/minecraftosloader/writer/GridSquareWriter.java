@@ -75,7 +75,7 @@ class GridSquareWriter {
                         world.setBlocks(x, CoordConverter.convert(y), blocks.toArray(new IBlock[blocks.size()]));
                     }
                 },
-                (x, y) -> world.calculateSkylightForRegion(x, CoordConverter.convert(y)));
+                (x, y, h) -> world.calculateSkylight(x, CoordConverter.convert(y)));
 
         System.out.println("Scaling height by " + scaler.getScale() * 100 + "%");
     }
