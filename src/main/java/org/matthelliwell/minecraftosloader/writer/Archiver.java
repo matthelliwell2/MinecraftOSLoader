@@ -73,7 +73,37 @@ public class Archiver {
             .put("NZ", new Point(400_000, 500_000))
             .put("OV", new Point(500_000, 500_000))
 
+            .put("SD", new Point(300_000, 400_000))
+            .put("SE", new Point(400_000, 400_000))
+            .put("TA", new Point(500_000, 400_000))
+
+            .put("SH", new Point(200_000, 300_000))
             .put("SJ", new Point(300_000, 300_000))
+            .put("SK", new Point(400_000, 300_000))
+            .put("TE", new Point(500_000, 300_000))
+            .put("TG", new Point(600_000, 300_000))
+
+            .put("SM", new Point(100_000, 200_000))
+            .put("SN", new Point(200_000, 200_000))
+            .put("SO", new Point(300_000, 200_000))
+            .put("SP", new Point(400_000, 200_000))
+            .put("TL", new Point(500_000, 200_000))
+            .put("TM", new Point(600_000, 200_000))
+
+            .put("SR", new Point(100_000, 100_000))
+            .put("SS", new Point(200_000, 100_000))
+            .put("ST", new Point(300_000, 100_000))
+            .put("SU", new Point(400_000, 100_000))
+            .put("TQ", new Point(500_000, 100_000))
+            .put("TR", new Point(600_000, 100_000))
+
+            .put("SV", new Point(      0, 0))
+            .put("SW", new Point(100_000, 0))
+            .put("SX", new Point(200_000, 0))
+            .put("SY", new Point(300_000, 0))
+            .put("SZ", new Point(400_000, 0))
+            .put("TV", new Point(500_000, 0))
+
             .build();
 
     final int LENGTH = 100_000;
