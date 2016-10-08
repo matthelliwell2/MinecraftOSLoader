@@ -1,12 +1,5 @@
 package org.matthelliwell.minecraftosloader.writer;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.NumberFormat;
-import java.util.Date;
-
 import net.morbz.minecraft.blocks.Material;
 import net.morbz.minecraft.level.FlatGenerator;
 import net.morbz.minecraft.level.GameType;
@@ -14,6 +7,13 @@ import net.morbz.minecraft.level.Level;
 import net.morbz.minecraft.world.DefaultLayers;
 import net.morbz.minecraft.world.World;
 import org.opengis.referencing.FactoryException;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.NumberFormat;
+import java.util.Date;
 
 /**
  * Generates the minecraft world
@@ -64,7 +64,7 @@ public class WorldWriter {
         level.setMapFeatures(false);
 
         // Change the last parameter to true is you want to add to an existing world. This is also not overwrite the
-        // level file so if you need a new level file delete the once in the world before running this program
+        // level file so if you need a new level file delete the one in the world before running this program
         final World world = new World(level, layers, true);
 
         final Date startTime = new Date();
@@ -99,7 +99,6 @@ public class WorldWriter {
 
     private Path getLocalDataPath(final String dataDir, final String nationGridReferenceSquare) {
         return Paths.get(dataDir)
-                        .resolve("opmplc_essh_" + nationGridReferenceSquare)
                         .resolve("OSOpenMapLocal (ESRI Shape File) " + nationGridReferenceSquare.toUpperCase())
                         .resolve("data");
     }
